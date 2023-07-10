@@ -5,13 +5,6 @@
 
 step 1: Run this code in your terminal
 
-    ﻿# Automatic Word Document Generator tool python
-
-# How to use it?
-
-
-step 1: Run this code in your terminal
-
     git clone https://github.com/Abhimaru/docgeneratortool.git
     cd docgeneratortool
     mkdir LABS
