@@ -109,7 +109,7 @@ def generatePDF(file):
     convert(f'{file}.docx', f'{file}.pdf')
 
 
-def makedoc(heading, aim, headingSize, aimSize, paraSize, folderName, filesNames):
+def makedoc(heading, aim, headingSize, aimSize, paraSize, folderName, filesNames, isLastPage=False):
     '''
     HEADINGS
     '''
@@ -172,9 +172,10 @@ def makedoc(heading, aim, headingSize, aimSize, paraSize, folderName, filesNames
         doc.add_picture(f'{tmp}tmp_{image}', width=aw.shared.Inches(3.13))
         os.remove(f'{tmp}tmp_{image}')
 
-    doc.add_page_break()
-    # add new section
-    doc.add_section().header.is_linked_to_previous = False
+    if not isLastPage:
+        doc.add_page_break()
+        # add new section
+        doc.add_section().header.is_linked_to_previous = False
 
 
 java_files = []
@@ -190,10 +191,10 @@ for folder in os.listdir(parentFolderName):
     # If folder is directory then append it to folderNames
     if os.path.isdir(os.path.join(parentFolderName, folder)):
         folderNames.append(folder)
-
+# Check if it is last lab or not
+isLastLab = False
 # Set Current Directory to parentFolderName
 os.chdir(parentFolderName)
-
 op = input("1. For Single LAB\n2. For All LAB\nChoose options (1/2):")
 if op == '1':
     print("Lab No\tLab Name")
@@ -205,6 +206,7 @@ if op == '1':
         print("Invalid Input")
         exit()
     else:
+        isLastLab = True
         folderName = folderNames[labNo-1]
         heading = folderName
         aim = aims[folderName] if aims.keys().__contains__(folderName) else ""
@@ -226,7 +228,7 @@ if op == '1':
 
         # call makedoc function
         makedoc(heading, aim, headingSize, aimSize,
-                paraSize, folderName, filesNames)
+                paraSize, folderName, filesNames, isLastLab)
         folderName = [folderName]
         java_files.clear()
         xml_files.clear()
@@ -255,11 +257,14 @@ elif op == '2':
 
             filesNames = java_files + xml_files + other_files
 
+        if folderName == folderNames[-1]:
+            isLastLab = True
         # print(f'Folder Name: {folderName}')
         # print(f'Files: {filesNames}')
         # call makedoc function
         makedoc(heading, aim, headingSize, aimSize,
-                paraSize, folderName, filesNames)
+                paraSize, folderName, filesNames, isLastLab)
+        isLastLab = False
         java_files.clear()
         xml_files.clear()
         other_files.clear()
