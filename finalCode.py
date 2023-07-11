@@ -1,4 +1,5 @@
 import docx as aw
+from docx.oxml.xmlchemy import OxmlElement
 from docx.oxml.ns import qn
 import os
 from aims import aims
@@ -14,6 +15,33 @@ fontTwo = "Consolas"
 # Create a new document
 doc = aw.Document()
 
+# make output folder in sub folders in this directory if not exist
+
+
+def makeFolder(myFolder):
+    for folder in os.listdir(myFolder):
+        if not os.path.exists(myFolder+"/"+folder+"/output"):
+            os.mkdir(myFolder+"/"+folder+"/output")
+
+
+def setPageBorder():
+    for section in doc.sections:
+        sec_pr = section._sectPr  # get the section properties el
+        # create new borders el
+        pg_borders = OxmlElement('w:pgBorders')
+        # specifies how the relative positioning of the borders should be calculated
+        pg_borders.set(qn('w:offsetFrom'), 'page')
+        for border_name in ('top', 'left', 'bottom', 'right',):  # set all borders
+            border_el = OxmlElement(f'w:{border_name}')
+            border_el.set(qn('w:val'), 'single')  # a single line
+            # for meaning of  remaining attrs please look docs
+            border_el.set(qn('w:sz'), '1')
+            border_el.set(qn('w:space'), '24')
+            border_el.set(qn('w:color'), 'auto')
+            pg_borders.append(border_el)  # register single border to border el
+        sec_pr.append(pg_borders)  # apply border changes to section
+
+
 # Set Document Margins to normal
 sections = doc.sections
 for section in sections:
@@ -21,6 +49,10 @@ for section in sections:
     section.bottom_margin = aw.shared.Inches(1)
     section.left_margin = aw.shared.Inches(1)
     section.right_margin = aw.shared.Inches(1)
+    # Making A4 document
+    section.page_height = aw.shared.Mm(297)
+    section.page_width = aw.shared.Mm(210)
+    setPageBorder()
 
 
 def makedoc(heading, aim, headingSize, aimSize, paraSize, folderName, filesNames):
@@ -91,8 +123,9 @@ xml_files = []
 other_files = []
 filesNames = []
 folderNames = []
-parentFolderName = "ALL LABS"
+parentFolderName = "LABS"
 
+makeFolder(parentFolderName)
 
 for folder in os.listdir(parentFolderName):
     # If folder is directory then append it to folderNames
@@ -115,7 +148,7 @@ if op == '1':
     else:
         folderName = folderNames[labNo-1]
         heading = folderName
-        aim = aims[folderName]
+        aim = aims[folderName] if aims[folderName] != None else ""
         for file in os.listdir(folderName):
             file_name = os.path.join(folderName, file)
             if os.path.isfile(file_name):
@@ -143,7 +176,7 @@ if op == '1':
 elif op == '2':
     for folderName in folderNames:
         heading = folderName
-        aim = aims[folderName]
+        aim = aims[folderName] if aims.keys().__contains__(folderName) else ""
         for file in os.listdir(folderName):
             file_name = os.path.join(folderName, file)
             if os.path.isfile(file_name):
@@ -173,7 +206,10 @@ elif op == '2':
 else:
     print("Invalid Input")
     exit()
+
 # Save document
-doc.save('test.docx')
+nameOftheFile = input("Enter the name of the file: ")
+os.chdir('..')
+doc.save(f'{nameOftheFile}.docx')
 # Open Document
-os.system(f'start test.docx')
+os.system(f'start {nameOftheFile}.docx')
