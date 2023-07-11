@@ -3,6 +3,7 @@ from docx.oxml.xmlchemy import OxmlElement
 from docx.oxml.ns import qn
 import os
 from aims import aims
+from PIL import Image, ImageOps
 
 # Define Doc Details
 heading = ''
@@ -11,6 +12,7 @@ aimSize = 16
 paraSize = 12
 fontOne = "Calibri"
 fontTwo = "Consolas"
+image_border_size = 5
 
 # Create a new document
 doc = aw.Document()
@@ -22,6 +24,18 @@ def makeFolder(myFolder):
     for folder in os.listdir(myFolder):
         if not os.path.exists(myFolder+"/"+folder+"/output"):
             os.mkdir(myFolder+"/"+folder+"/output")
+
+# function for make image border
+
+
+def add_image_border(input_image, output_image, border):
+    img = Image.open(input_image)
+    img_copy = img.copy()
+    if isinstance(border, int) or isinstance(border, tuple):
+        bimg = ImageOps.expand(img_copy, border=border)
+    else:
+        raise RuntimeError('Border is not an image or tuple')
+    bimg.save(output_image)
 
 
 def setPageBorder():
@@ -52,6 +66,7 @@ for section in sections:
     # Making A4 document
     section.page_height = aw.shared.Mm(297)
     section.page_width = aw.shared.Mm(210)
+    section.header.is_linked_to_previous = True
     setPageBorder()
 
 
@@ -59,19 +74,20 @@ def makedoc(heading, aim, headingSize, aimSize, paraSize, folderName, filesNames
     '''
     HEADINGS
     '''
-    pg1 = doc.add_paragraph()
+    pg1 = doc.add_heading()
+    pg1.underline = aw.shared.RGBColor(0, 0, 0)
     pg1.alignment = aw.enum.text.WD_ALIGN_PARAGRAPH.CENTER
+    pg1.style = doc.styles['Title']
     pg1 = pg1.add_run(heading)
     pg1.font.name = fontOne
     pg1.font.bold = True
-    pg1.font.underline = True
     pg1.font.size = aw.shared.Pt(headingSize)
     pg1.font.color.rgb = aw.shared.RGBColor(0, 0, 0)
 
     '''
     AIM
     '''
-    pg2 = doc.add_paragraph()
+    pg2 = doc.add_heading()
     pg2.alignment = aw.enum.text.WD_ALIGN_PARAGRAPH.JUSTIFY
     pg2 = pg2.add_run(f'Aim: {aim}')
     pg2.font.name = fontOne
@@ -112,8 +128,9 @@ def makedoc(heading, aim, headingSize, aimSize, paraSize, folderName, filesNames
     # Add Screenshot to document
     tmp = folderName+'/output/'
     for image in os.listdir(tmp):
-        image_name = os.path.basename(image)
-        doc.add_picture(tmp+image_name, width=aw.shared.Inches(3.13))
+        add_image_border(tmp+image, f'{tmp}tmp_{image}', image_border_size)
+        doc.add_picture(f'{tmp}tmp_{image}', width=aw.shared.Inches(3.13))
+        os.remove(f'{tmp}tmp_{image}')
 
     doc.add_page_break()
 
