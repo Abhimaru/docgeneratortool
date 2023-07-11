@@ -14,9 +14,40 @@ paraSize = 12
 fontOne = "Calibri"
 fontTwo = "Consolas"
 image_border_size = 5
+id_no = "21CP315 - Abhishek Maru"
+subject_name = "ANDROID LAB"
 
 # Create a new document
 doc = aw.Document()
+
+
+def makeHeader(folder):
+
+    txt = input("Enter Middle text for Heading (press Enter for Default): ")
+    if (txt == ""):
+        subject_name = "ANDROID"
+    else:
+        subject_name = txt
+
+    txt = input("Enter Ending text for Heading (press Enter for Default): ")
+    if (txt == ""):
+        id_no = "21CP315 - Abhishek Maru"
+    else:
+        id_no = txt
+
+    length = len(folder)
+    i = 0
+    for section in doc.sections:
+        section.is_linked_to_previous = False
+        if (i == length):
+            return
+        # print(folder[i])
+        header = section.header
+        paragraph = header.paragraphs[0]
+        paragraph.text = f'{folder[i]}\t{subject_name}\t{id_no}'
+        paragraph.style.font.name = fontOne
+        paragraph.style.font.size = aw.shared.Pt(12)
+        i += 1
 
 # make output folder in sub folders in this directory if not exist
 
@@ -39,7 +70,7 @@ def add_image_border(input_image, output_image, border):
     bimg.save(output_image)
 
 
-#making border around page
+# making border around page
 def setPageBorder():
     for section in doc.sections:
         sec_pr = section._sectPr  # get the section properties el
@@ -82,6 +113,7 @@ def makedoc(heading, aim, headingSize, aimSize, paraSize, folderName, filesNames
     '''
     HEADINGS
     '''
+
     pg1 = doc.add_heading()
     pg1.underline = aw.shared.RGBColor(0, 0, 0)
     pg1.alignment = aw.enum.text.WD_ALIGN_PARAGRAPH.CENTER
@@ -141,6 +173,8 @@ def makedoc(heading, aim, headingSize, aimSize, paraSize, folderName, filesNames
         os.remove(f'{tmp}tmp_{image}')
 
     doc.add_page_break()
+    # add new section
+    doc.add_section().header.is_linked_to_previous = False
 
 
 java_files = []
@@ -193,10 +227,13 @@ if op == '1':
         # call makedoc function
         makedoc(heading, aim, headingSize, aimSize,
                 paraSize, folderName, filesNames)
+        folderName = [folderName]
         java_files.clear()
         xml_files.clear()
         other_files.clear()
         filesNames.clear()
+        makeHeader(folderName)
+
 
 elif op == '2':
     for folderName in folderNames:
@@ -227,13 +264,14 @@ elif op == '2':
         xml_files.clear()
         other_files.clear()
         filesNames.clear()
+    makeHeader(folderNames)
 
 else:
     print("Invalid Input")
     exit()
 
 # Save document
-nameOftheFile = input("Enter the name of the file: ")
+nameOftheFile = input("Enter the name of the file to save: ")
 os.chdir('..')
 doc.save(f'{nameOftheFile}.docx')
 
