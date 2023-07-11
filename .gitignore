@@ -2,3 +2,4 @@ LABS/
 __pycache__/
 testingCode.py
 *.docx
+*.pdf
