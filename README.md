@@ -23,4 +23,4 @@ step 4: In *aims*.py file enter the key value as your folder name for example **
 
 After that run this code:
 
-    python finalCode.py
+    python generateDoc.py
