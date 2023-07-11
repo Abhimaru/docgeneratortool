@@ -39,6 +39,7 @@ def add_image_border(input_image, output_image, border):
     bimg.save(output_image)
 
 
+#making border around page
 def setPageBorder():
     for section in doc.sections:
         sec_pr = section._sectPr  # get the section properties el
@@ -241,5 +242,6 @@ if text_1 == 'y' or text_1 == 'Y':
     generatePDF(nameOftheFile)
     os.system(f'start {nameOftheFile}.pdf')
 
-# Open Document
-os.system(f'start {nameOftheFile}.docx')
+text_1 = input("Do you want to Open Word File? (y/n): ")
+if text_1 == 'y' or text_1 == 'Y':
+    os.system(f'start {nameOftheFile}.docx')
