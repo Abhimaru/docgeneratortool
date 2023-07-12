@@ -20,7 +20,34 @@ subject_name = "ANDROID LAB"
 # Create a new document
 doc = aw.Document()
 
+# Adding Page Numbers
 
+
+def create_element(name):
+    return OxmlElement(name)
+
+
+def create_attribute(element, name, value):
+    element.set(qn(name), value)
+
+
+def add_page_number(run):
+    fldChar1 = create_element('w:fldChar')
+    create_attribute(fldChar1, 'w:fldCharType', 'begin')
+
+    instrText = create_element('w:instrText')
+    create_attribute(instrText, 'xml:space', 'preserve')
+    instrText.text = "PAGE"
+
+    fldChar2 = create_element('w:fldChar')
+    create_attribute(fldChar2, 'w:fldCharType', 'end')
+
+    run._r.append(fldChar1)
+    run._r.append(instrText)
+    run._r.append(fldChar2)
+
+
+# creating Header
 def makeHeader(folder):
 
     txt = input("Enter Middle text for Heading (press Enter for Default): ")
@@ -234,7 +261,9 @@ if op == '1':
         xml_files.clear()
         other_files.clear()
         filesNames.clear()
-        makeHeader(folderName)
+        txt = input("do you want to add Header? (y/n)")
+        if (txt == 'y' or txt == 'Y'):
+            makeHeader(folderName)
 
 
 elif op == '2':
@@ -269,22 +298,33 @@ elif op == '2':
         xml_files.clear()
         other_files.clear()
         filesNames.clear()
-    makeHeader(folderNames)
+    txt = input("do you want to add Header? (y/n)")
+    if (txt == 'y' or txt == 'Y'):
+        makeHeader(folderNames)
 
 else:
     print("Invalid Input")
     exit()
+
+
+txt = input("do you want to add Page Number in Footer? (y/n)")
+if (txt == 'y' or txt == 'Y'):
+    footer = doc.sections[0].footer
+    footer_para = footer.paragraphs[0]
+    footer_para.alignment = aw.enum.text.WD_ALIGN_PARAGRAPH.RIGHT
+    f_run = footer_para.add_run()
+    add_page_number(f_run)
 
 # Save document
 nameOftheFile = input("Enter the name of the file to save: ")
 os.chdir('..')
 doc.save(f'{nameOftheFile}.docx')
 
-text_1 = input("Do you want to generate PDF? (y/n): ")
-if text_1 == 'y' or text_1 == 'Y':
+txt = input("Do you want to generate PDF? (y/n): ")
+if txt == 'y' or txt == 'Y':
     generatePDF(nameOftheFile)
     os.system(f'start {nameOftheFile}.pdf')
 
-text_1 = input("Do you want to Open Word File? (y/n): ")
-if text_1 == 'y' or text_1 == 'Y':
+txt = input("Do you want to Open Word File? (y/n): ")
+if txt == 'y' or txt == 'Y':
     os.system(f'start {nameOftheFile}.docx')
