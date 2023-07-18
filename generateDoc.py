@@ -13,7 +13,7 @@ aimSize = 16
 paraSize = 12
 fontOne = "Calibri"
 fontTwo = "Consolas"
-image_border_size = 5
+image_border_size = 3
 id_no = "21CP315 - Abhishek Maru"
 subject_name = "ANDROID LAB"
 
@@ -90,10 +90,7 @@ def makeFolder(myFolder):
 def add_image_border(input_image, output_image, border):
     img = Image.open(input_image)
     img_copy = img.copy()
-    if isinstance(border, int) or isinstance(border, tuple):
-        bimg = ImageOps.expand(img_copy, border=border)
-    else:
-        raise RuntimeError('Border is not an image or tuple')
+    bimg = ImageOps.expand(img_copy, border=5, fill='black')
     bimg.save(output_image)
 
 
