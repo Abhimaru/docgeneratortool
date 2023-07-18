@@ -90,7 +90,7 @@ def makeFolder(myFolder):
 def add_image_border(input_image, output_image, border):
     img = Image.open(input_image)
     img_copy = img.copy()
-    bimg = ImageOps.expand(img_copy, border=5, fill='black')
+    bimg = ImageOps.expand(img_copy, border, fill='black')
     bimg.save(output_image)
 
 
