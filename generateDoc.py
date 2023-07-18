@@ -205,7 +205,7 @@ def makedoc(heading, aim, headingSize, aimSize, paraSize, folderName, filesNames
         doc.add_section().header.is_linked_to_previous = False
 
 
-def makedocIndividual(heading, aim, headingSize, aimSize, paraSize, image, file, isLastPage=False):
+def makedocIndividual(heading, aim, headingSize, aimSize, paraSize, imageList, file, isLastPage=False):
     '''
     HEADINGS
     '''
@@ -264,9 +264,10 @@ def makedocIndividual(heading, aim, headingSize, aimSize, paraSize, image, file,
 
     # Add Screenshot to document
     tmp = 'outputs/'
-    add_image_border(tmp+image, f'{tmp}tmp_{image}', image_border_size)
-    doc.add_picture(f'{tmp}tmp_{image}', width=aw.shared.Inches(3.13))
-    os.remove(f'{tmp}tmp_{image}')
+    for image in imageList:
+        add_image_border(tmp+image, f'{tmp}tmp_{image}', image_border_size)
+        doc.add_picture(f'{tmp}tmp_{image}', width=aw.shared.Inches(3.13))
+        os.remove(f'{tmp}tmp_{image}')
 
     if not isLastPage:
         doc.add_page_break()
@@ -284,37 +285,50 @@ parentFolderName = "LABS"
 opt = input(
     "1. For individual files\n2. For individual folders\nChoose options (1/2):")
 if opt == '1':
-    os.chdir("LABS")
+    os.chdir("INDIVIDUAL")
     if not os.path.exists("outputs"):
         os.mkdir("outputs")
 
     def sort_file(file_list):
         return sorted(file_list, key=lambda x: int(x.split('-')[0]))
 
-    def sort_img(img_list):
-        return sorted(img_list, key=lambda x: int(x.split('.')[0]))
-
     file_list = []
     img_list = []
-    i = 1
+    img_dir = {}
     for file in os.listdir():
         if os.path.isfile(file):
             file_list.append(file)
-        mystr = f'{i}.png'
-        img_list.append(mystr)
-        i += 1
 
-    img_list = sort_img(img_list)
+    for file in os.listdir("outputs"):
+        img_list.append(file)
+        new_name = str(file.split('.')[0])
+        file_num = ""
+        for i in new_name:
+            if i.isdigit():
+                file_num += i
+            else:
+                if img_dir.get(file_num) == None:
+                    img_dir[file_num] = []
+                img_dir[file_num].append(file)
+                file_num = ""
+        if file_num != "":
+            if img_dir.get(file_num) == None:
+                img_dir[file_num] = []
+            img_dir[file_num].append(file)
+
     file_list = sort_file(file_list)
+
     count = 1
     heading_list = []
     tmp = 0
     for file in file_list:
         try:
-            if not tmp == len(file_list):
-                img = img_list[tmp]
-
-            heading = f'EXPERIMENT-{count}'
+            file_name = file.split('-')[0]
+            if img_dir.get(file_name) == None:
+                img = []
+            else:
+                img = img_dir[file_name]
+            heading = f'EXPERIMENT-{file_name}'
             heading_list.append(heading)
             isLastLab = False
             aim = aims[heading] if aims.keys().__contains__(heading) else ""
@@ -322,10 +336,11 @@ if opt == '1':
                 isLastLab = True
             makedocIndividual(heading, aim, headingSize, aimSize,
                               paraSize, img, file, isLastLab)
+
             count += 1
             tmp += 1
-        except:
-            print("No image found")
+        except Exception as e:
+            print("Something Unusual Happened")
     img_list.clear()
     file_list.clear()
     txt = input("do you want to add Header? (y/n)")
