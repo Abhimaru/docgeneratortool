@@ -28,7 +28,7 @@ step 2: There are two folders we created **LABS:open_file_folder:** and **INDIVI
 ### :point_right:_if you want to generate document for individual files then follow this steps:_
 1. Inside **"INDIVIDUAL:open_file_folder:"** folder paste the files you want to add in document. follow this naming convention **1-fileName:clipboard:, 2-fileName:clipboard:, 3-fileName:clipboard:, etc...**
 > **Note:closed_book::**
-> 1. If your Lab has Lab a and b then write foldername as **Lab-No-a**, **Lab-No-b**, etc...
+If your Lab has Lab a and b then write foldername as **Lab-No-a**, **Lab-No-b**, etc...
 
 3. inside **OUTPUTS:open_file_folder:** folders paste the output images named as 1.PNG, 2.PNG, 3.PNG and so on. (PNG or JPG) 
 > **Note:closed_book::**
