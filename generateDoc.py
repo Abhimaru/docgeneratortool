@@ -459,6 +459,9 @@ if (txt == 'y' or txt == 'Y'):
 # Save document
 nameOftheFile = input("Enter the name of the file to save: ")
 os.chdir('..')
+if (not os.path.exists('OUTPUT_FILES')):
+    os.mkdir('OUTPUT_FILES')
+os.chdir('OUTPUT_FILES')
 doc.save(f'{nameOftheFile}.docx')
 
 txt = input("Do you want to generate PDF? (y/n): ")
